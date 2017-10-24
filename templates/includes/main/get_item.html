@@ -1,0 +1,19 @@
+{% extends "includes/main/main.html" %}
+
+{% block content %}
+<div class="col-md-9 text-capitalize">
+	<h2>
+	{% if category_name is defined %}
+	{{category_name}}
+	{% else %}
+	Items
+	{% endif %}
+	</h2>
+	<dl class="item">
+		{% for item in items %}
+			<dt><a href="{{ url_for('read_item_description', category_id=item.category_id, item_id=item.id) }}">{{ item.name }}</a></dt>
+			{% block item_description %}{% endblock %}
+		{% endfor %}
+	</dl>
+</div>
+{% endblock %}
