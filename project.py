@@ -1,20 +1,42 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Imports from Flask
 from flask import Flask
 from flask import request, render_template, redirect, url_for
 
+# Imports from "database_setup.py"
+from database_setup import Base, Category, Item
+
+# Imports from SQLAlchemy toolkit
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+# Connect to database,
+# Create session
+engine = create_engine("sqlite:///item_catelog.db")
+# Bind schema constructs(mapper code) to engine
+Base.metadata.bind = engine
+# Create a configured Session class
+DBSession = sessionmaker(bind=engine)
+# Create a session
+session = DBSession()
+
+
 # Create Flask instance
 app = Flask(__name__)
 
 @app.route("/login")
-def showLogin():
+def show_login():
 	return render_template("login.html")
 
 
 @app.route("/", methods=["GET"])
 def index():
-	return render_template("index.html")
+	categories = session.query(Category).all()
+	items = session.query(Item).all()
+	return render_template("index.html",
+						   categories=categories,
+						   items=items)
 
 
 @app.route("/category/create/", methods=["GET", "POST"])
@@ -40,6 +62,29 @@ def delete_category(category_id):
 	else:
 		return "Post request to delete category"
 
+
+@app.route("/category/<int:category_id>/item/", methods=["GET"])
+def read_item_by_category(category_id):
+	categories = session.query(Category)
+	category = categories.filter_by(id=category_id).one()
+	items = session.query(Item).filter_by(category_id=category_id)
+	return render_template("item/read_item_by_category.html",
+						   items=items,
+						   categories=categories,
+						   category_name=category.name)
+
+
+@app.route("/category/<int:category_id>/item/<int:item_id>/description/")
+def read_item_description(category_id, item_id):
+	categories = session.query(Category)
+	category = categories.filter_by(id=category_id).one()
+	items = session.query(Item).filter_by(id=item_id)
+	item = items.one()
+	return render_template("item/read_item_description.html",
+						   items = items,
+						   item = item,
+						   categories=categories,
+						   category_name=category.name)
 
 @app.route("/category/<int:category_id>/item/create/", methods=["GET", "POST"])
 def create_item(category_id):
