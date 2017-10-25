@@ -7,7 +7,7 @@ import sys
 # Imports from SQLAlchemy toolkit
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy import create_engine
 
 # Create instance of declarative base class.
@@ -25,6 +25,13 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
 
+    @property
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
+
 
 class Item(Base):
     """Modal of Item:
@@ -37,7 +44,16 @@ class Item(Base):
     name = Column(String(250), nullable=False)
     description = Column(String(1000))
     category_id = Column(Integer, ForeignKey("category.id"))
-    category = relationship(Category)
+    category = relationship("Category", backref=backref("item", cascade="all, delete-orphan"))
+
+    @property
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "category": self.category.name
+        }
 
 # Create instance of Engine class,
 # which provides interface to database
