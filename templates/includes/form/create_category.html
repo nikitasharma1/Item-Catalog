@@ -1,0 +1,16 @@
+{% extends "includes/main/main.html" %}
+
+{% block content %}
+<div class="col-md-9">
+	<h2>Create Category</h2>
+	<form method="POST" action="{{ url_for('create_category') }}">
+		<div class="form-group">
+			<input type="text" name="name" class="form-control" placeholder="Category Name"><br>
+			<input type="submit" value="Create" class="btn btn-primary">
+			<a href="{{ url_for('index') }}">
+				<input type="button" value="Cancel" class="btn btn-inverse">
+			</a>
+		</div>
+	</form>
+</div>
+{% endblock %}

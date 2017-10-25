@@ -1,0 +1,17 @@
+{% extends "includes/main/main.html" %}
+
+{% block content %}
+<div class="col-md-9">
+	<h2>Update Item</h2>
+	<form method="POST" action="{{ url_for('update_item', category_id=category_id, item_id=item_id) }}">
+		<div>
+			<input type="text" name="name" class="form-control" value="{{ item.name }}" title="Item Name"><br>
+			<input type="text" name="description" class="form-control description" value="{{ item.description }}" title="Item Description"><br>
+			<input type="submit" value="Update" class="btn btn-primary">
+			<a href="{{ url_for('read_item_description', category_id=category_id, item_id=item_id) }}">
+				<input type="button" value="Cancel" class="btn btn-inverse">
+			</a>
+		</div>
+	</form>
+</div>
+{% endblock %}

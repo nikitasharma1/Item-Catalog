@@ -1,17 +1,37 @@
 {% extends "includes/main/main.html" %}
 
 {% block content %}
-<div class="col-md-9 text-capitalize">
-	<h2>
+<div class="col-md-9">
+
 	{% if category_name is defined %}
-	{{category_name}}
+	<h2 class="text-capitalize">{{category_name}}</h2>
+		{% if item_name is not defined %}
+		<a href="{{ url_for('update_category', category_id=category_id) }}">
+			<button type="button" class="btn btn-primary">
+			  <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Update
+			</button>
+		</a>
+		<a href="{{ url_for('delete_category', category_id=category_id) }}">
+			<button type="button" class="btn btn-danger">
+			  <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+			</button>
+		</a>
+		<a href="{{ url_for('create_item', category_id=category_id) }}">
+			<button type="button" class="btn btn-primary">
+			  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Item
+			</button>
+		</a>
+		<br><br>
+		{% endif %}
 	{% else %}
-	Items
+	<h2 class="text-capitalize">Items</h2>
 	{% endif %}
-	</h2>
+
 	<dl class="item">
 		{% for item in items %}
-			<dt><a href="{{ url_for('read_item_description', category_id=item.category_id, item_id=item.id) }}">{{ item.name }}</a></dt>
+			<dt class="text-capitalize">
+				<a href="{{ url_for('read_item_description', category_id=item.category_id, item_id=item.id) }}">{{ item.name }}</a>
+			</dt>
 			{% block item_description %}{% endblock %}
 		{% endfor %}
 	</dl>

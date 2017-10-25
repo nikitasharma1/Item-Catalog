@@ -1,0 +1,17 @@
+{% extends "includes/main/main.html" %}
+
+{% block content %}
+<div class="col-md-9">
+	<h2>Create Item</h2>
+	<form method="POST" action="{{ url_for('create_item', category_id=category_id) }}">
+		<div class="form-group">
+			<input type="text" name="name" class="form-control" placeholder="Item Name"><br>
+			<input type="text" name="description" class="form-control description" placeholder="Item description"><br>
+			<input type="submit" value="Create" class="btn btn-primary">
+			<a href="{{ url_for('read_item_by_category', category_id=category_id) }}">
+				<input type="button" value="Cancel" class="btn btn-inverse">
+			</a>
+		</div>
+	</form>
+</div>
+{% endblock %}

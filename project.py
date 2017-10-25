@@ -3,6 +3,7 @@
 # Imports from Flask
 from flask import Flask
 from flask import request, render_template, redirect, url_for
+from flask import jsonify
 
 # Imports from "database_setup.py"
 from database_setup import Base, Category, Item
@@ -32,8 +33,8 @@ def show_login():
 
 @app.route("/", methods=["GET"])
 def index():
-	categories = session.query(Category).all()
-	items = session.query(Item).all()
+	categories = session.query(Category)
+	items = session.query(Item)
 	return render_template("index.html",
 						   categories=categories,
 						   items=items)
@@ -41,26 +42,46 @@ def index():
 
 @app.route("/category/create/", methods=["GET", "POST"])
 def create_category():
+	categories = session.query(Category)
 	if request.method == "GET":
-		return render_template("category/create_category.html")
+		return render_template("category/create_category.html",
+							   categories=categories)
 	else:
-		return "Post request to create category"
+		category = Category(name=request.form["name"])
+		session.add(category)
+		session.commit()
+		return redirect(url_for("index"))
 
 
 @app.route("/category/<int:category_id>/update/", methods=["GET", "POST"])
 def update_category(category_id):
+	categories = session.query(Category)
+	category = session.query(Category).filter_by(id=category_id).one()
 	if request.method == "GET":
-		return render_template("category/update_category.html", category_id=category_id)
+		return render_template("category/update_category.html",
+							   category_id=category_id,
+							   category_name=category.name,
+							   categories=categories)
 	else:
-		return "Post request to update category"
+		category.name = request.form["name"]
+		session.add(category)
+		session.commit()
+		return redirect(url_for("index"))
 
 
 @app.route("/category/<int:category_id>/delete/", methods=["GET", "POST"])
 def delete_category(category_id):
+	categories = session.query(Category)
+	category = session.query(Category).filter_by(id=category_id).one()
 	if request.method == "GET":
-		return render_template("category/delete_category.html", category_id=category_id)
+		return render_template("category/delete_category.html",
+							   category_id=category_id,
+							   category_name=category.name,
+							   categories=categories)
 	else:
-		return "Post request to delete category"
+		session.delete(category)
+		session.commit()
+		return redirect(url_for("index"))
 
 
 @app.route("/category/<int:category_id>/item/", methods=["GET"])
@@ -71,7 +92,8 @@ def read_item_by_category(category_id):
 	return render_template("item/read_item_by_category.html",
 						   items=items,
 						   categories=categories,
-						   category_name=category.name)
+						   category_name=category.name,
+						   category_id=category_id)
 
 
 @app.route("/category/<int:category_id>/item/<int:item_id>/description/")
@@ -84,60 +106,93 @@ def read_item_description(category_id, item_id):
 						   items = items,
 						   item = item,
 						   categories=categories,
-						   category_name=category.name)
+						   category_name=category.name,
+						   item_name=item.name,
+						   category_id=category_id,
+						   item_id=item_id)
 
 @app.route("/category/<int:category_id>/item/create/", methods=["GET", "POST"])
 def create_item(category_id):
+	categories = session.query(Category)
 	if request.method == "GET":
-		return render_template("item/create_item.html")
+		return render_template("item/create_item.html",
+							   category_id=category_id,
+							   categories=categories)
 	else:
-		return "Post request to create item"
+		item = Item(name=request.form["name"],
+					description=request.form["description"],
+					category_id=category_id)
+		session.add(item)
+		session.commit()
+		return redirect(url_for("read_item_by_category",
+								category_id=category_id))
 
 
 @app.route("/category/<int:category_id>/item/<int:item_id>/update/", methods=["GET", "POST"])
 def update_item(category_id, item_id):
+	categories = session.query(Category)
+	item = session.query(Item).filter_by(id=item_id).one()
 	if request.method == "GET":
-		return render_template("item/update_item.html", category_id=category_id, item_id=item_id)
+		return render_template("item/update_item.html",
+							   category_id=category_id,
+							   item_id=item_id,
+							   item=item,
+							   categories=categories)
 	else:
-		return "Post request to update item"
+		item.name = request.form["name"]
+		item.description = request.form["description"]
+		session.add(item)
+		session.commit()
+		return redirect(url_for("read_item_description",
+								category_id=category_id,
+								item_id=item_id))
 
 
 @app.route("/category/<int:category_id>/item/<int:item_id>/delete/", methods=["GET", "POST"])
 def delete_item(category_id, item_id):
+	categories = session.query(Category)
+	item = session.query(Item).filter_by(id=item_id).one()
 	if request.method == "GET":
-		return render_template("item/delete_item.html", category_id=category_id, item_id=item_id)
+		return render_template("item/delete_item.html",
+							   category_id=category_id,
+							   item_id=item_id,
+							   categories=categories)
 	else:
-		return "Post request to update item"
+		session.delete(item)
+		session.commit()
+		return redirect(url_for("read_item_by_category",
+								category_id=category_id))
 
 
-@app.route("/category/JSON")
+@app.route("/category/JSON", methods=["GET"])
 def categories_json():
-	return "categories json"
+	categories = session.query(Category).all()
+	return jsonify(Categories=[c.serialize for c in categories])
 
 
-@app.route("/category/<int:category_id>/JSON")
+@app.route("/category/<int:category_id>/JSON", methods=["GET"])
 def category_json(category_id):
-	return "category json"
+	category = session.query(Category).filter_by(id=category_id).one()
+	return jsonify(Category=category.serialize)
 
 
-@app.route("/item/JSON")
+@app.route("/item/JSON", methods=["GET"])
 def items_JSON():
-	return "items json"
+	items = session.query(Item).all()
+	return jsonify(Items=[i.serialize for i in items])
 
 
-@app.route("/item/<int:item_id>/JSON")
-def item_JSON(item_id):
-	return "item json"
+@app.route("/item/<int:item_id>/JSON", methods=["GET"])
+@app.route("/category/<int:category_id>/item/<int:item_id>/JSON", methods=["GET"])
+def item_JSON(item_id, category_id=None):
+	item = session.query(Item).filter_by(id=item_id).one()
+	return jsonify(Item=item.serialize)
 
 
-@app.route("/category/<int:category_id>/item/JSON")
+@app.route("/category/<int:category_id>/item/JSON", methods=["GET"])
 def category_items_json(category_id):
-	return "category items json"
-
-
-@app.route("/category/<int:category_id>/item/<int:item_id>/JSON")
-def category_item_json(category_id, item_id):
-	return "category item json"
+	items = session.query(Item).filter_by(category_id=category_id).all()
+	return jsonify(Items=[i.serialize for i in items])
 
 
 if __name__ == "__main__":
