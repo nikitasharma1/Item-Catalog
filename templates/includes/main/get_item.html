@@ -31,6 +31,12 @@
 		{% for item in items %}
 			<dt class="text-capitalize">
 				<a href="{{ url_for('read_item_description', category_id=item.category_id, item_id=item.id) }}">{{ item.name }}</a>
+				{% if category_name is not defined %}
+					<span class="text-muted">
+						<em> ({{ item.category.name }}) </em>
+					</span>
+				{% endif %}
+
 			</dt>
 			{% block item_description %}{% endblock %}
 		{% endfor %}

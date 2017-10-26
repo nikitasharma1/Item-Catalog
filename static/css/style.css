@@ -4,3 +4,25 @@
 	-ms-box-sizing: border-box;
 	box-sizing: border-box;
 }
+
+dt {
+	font-size: 16px !important;
+	font-weight: normal;
+}
+
+.flash-list {
+	list-style: none !important;
+	padding: 0;
+}
+
+.flash-msg {
+	list-style: none !important;
+	background-color: #69ffaa;
+}
+
+@media screen and (max-width: 990px) {
+
+	dt {
+		text-align: center !important;
+	}
+}
