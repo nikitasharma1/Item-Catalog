@@ -3,4 +3,15 @@
 		<h1 class="text-capitalize">Item Catalog</h1>
 		<hr>
 	</div>
+	<div class="col-md-12">
+		{% with messages=get_flashed_messages() %}
+			{% if messages %}
+				<ul class="flash-list">
+					{% for message in messages %}
+						<li class="flash-msg text-center">{{ message }}</li>
+					{% endfor %}
+				</ul>
+			{% endif %}
+		{% endwith %}
+	</div>
 </header>

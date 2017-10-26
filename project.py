@@ -3,7 +3,7 @@
 # Imports from Flask
 from flask import Flask
 from flask import request, render_template, redirect, url_for
-from flask import jsonify
+from flask import jsonify, flash
 
 # Imports from "database_setup.py"
 from database_setup import Base, Category, Item
@@ -50,6 +50,7 @@ def create_category():
 		category = Category(name=request.form["name"])
 		session.add(category)
 		session.commit()
+		flash("Added category "+ category.name)
 		return redirect(url_for("index"))
 
 
@@ -63,9 +64,11 @@ def update_category(category_id):
 							   category_name=category.name,
 							   categories=categories)
 	else:
+		old_name = category.name
 		category.name = request.form["name"]
 		session.add(category)
 		session.commit()
+		flash("Updated category " + old_name + " to " + category.name)
 		return redirect(url_for("index"))
 
 
@@ -81,6 +84,7 @@ def delete_category(category_id):
 	else:
 		session.delete(category)
 		session.commit()
+		flash("Deleted category " + category.name)
 		return redirect(url_for("index"))
 
 
@@ -124,6 +128,7 @@ def create_item(category_id):
 					category_id=category_id)
 		session.add(item)
 		session.commit()
+		flash("Created item " + item.name)
 		return redirect(url_for("read_item_by_category",
 								category_id=category_id))
 
@@ -139,10 +144,12 @@ def update_item(category_id, item_id):
 							   item=item,
 							   categories=categories)
 	else:
+		old_name = item.name
 		item.name = request.form["name"]
 		item.description = request.form["description"]
 		session.add(item)
 		session.commit()
+		flash("Updated item " + old_name)
 		return redirect(url_for("read_item_description",
 								category_id=category_id,
 								item_id=item_id))
@@ -160,6 +167,7 @@ def delete_item(category_id, item_id):
 	else:
 		session.delete(item)
 		session.commit()
+		flash("Deleted item " + item.name)
 		return redirect(url_for("read_item_by_category",
 								category_id=category_id))
 
@@ -196,6 +204,8 @@ def category_items_json(category_id):
 
 
 if __name__ == "__main__":
-    # To debug, Set to True, otherwise False
-    app.debug = True
-    app.run(host="0.0.0.0", port=5000)
+	# key to be changed later to something secure
+	app.secret_key = "somekey"
+	# To debug, Set to True, otherwise False
+	app.debug = True
+	app.run(host="0.0.0.0", port=5000)
