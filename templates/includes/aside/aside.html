@@ -1,11 +1,13 @@
 <aside class="col-md-3 text-capitalize">
 	<h2><a href="{{ url_for('index') }}">Categories</a></h2>
+	{% if logged_in %}
 	<a href="{{ url_for('create_category') }}">
 		<button type="button" class="btn btn-primary">
 		  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Category
 		</button>
 	</a>
 	<br><br>
+	{% endif %}
 	<dl class="category">
 		{% for category in categories %}
 		<dt><a href="{{ url_for('read_item_by_category', category_id=category.id) }}">{{ category.name }}</a></dt>

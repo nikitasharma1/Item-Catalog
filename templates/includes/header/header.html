@@ -1,9 +1,26 @@
 <header class="row">
 	<div class="col-md-12">
-		<h1 class="text-capitalize">Item Catalog</h1>
-		<hr>
+		<div class="row">
+			<div class="col-md-6">
+				<h1 class="text-capitalize">Item Catalog</h1>
+			</div>
+			<div class="col-md-6 text-right login-div">
+				<br>
+				{% if not logged_in %}
+				<a href="{{ url_for('show_login') }}">
+					<button class="btn btn-default">Log In</button>
+				</a>
+				{% else %}
+				<a href="{{ url_for('logout') }}">
+					<button class="btn btn-default">Log Out</button>
+				</a>
+				{% endif %}
+			</div>
+		</div>
 	</div>
+
 	<div class="col-md-12">
+		<hr>
 		{% with messages=get_flashed_messages() %}
 			{% if messages %}
 				<ul class="flash-list">
