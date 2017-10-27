@@ -17,24 +17,14 @@ DBSession = sessionmaker(bind=engine)
 # Create a session
 session = DBSession()
 
-category1 = Category(name="category1",
-					 user_id=1)
-session.add(category1)
+user1 = User(name="User1",
+			 email="example1@example1.com",
+			 picture="http://via.placeholder.com/100x100")
+session.add(user1)
 session.commit()
 
-category2 = Category(name="category2",
-					 user_id=1)
-session.add(category2)
+user2 = User(name="User2",
+			 email="example2@example2.com",
+			 picture="http://via.placeholder.com/100x100")
+session.add(user2)
 session.commit()
-
-category3 = Category(name="category3",
-					 user_id=1)
-session.add(category3)
-session.commit()
-
-category4 = Category(name="category4",
-					 user_id=1)
-session.add(category4)
-session.commit()
-
-print("Categories added!")
