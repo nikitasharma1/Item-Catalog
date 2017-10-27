@@ -2,7 +2,7 @@
 
 {% block item_description %}
 	<dd>{{ item.description }}</dd>
-	{% if logged_in %}
+	{% if logged_in and user_is_creator %}
 	<br>
 	<a href="{{ url_for('update_item', category_id=category_id, item_id=item_id) }}">
 		<input type="button" value="Update" class="btn btn-primary">

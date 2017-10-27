@@ -6,6 +6,7 @@
 	{% if category_name is defined %}
 	<h2 class="text-capitalize">{{category_name}}</h2>
 		{% if item_name is not defined and logged_in%}
+		{% if user_is_creator %}
 		<a href="{{ url_for('update_category', category_id=category_id) }}">
 			<button type="button" class="btn btn-primary">
 			  <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Update
@@ -16,6 +17,7 @@
 			  <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
 			</button>
 		</a>
+		{% endif %}
 		<a href="{{ url_for('create_item', category_id=category_id) }}">
 			<button type="button" class="btn btn-primary">
 			  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Create Item

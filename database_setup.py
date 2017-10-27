@@ -16,6 +16,18 @@ from sqlalchemy import create_engine
 Base = declarative_base()
 
 
+class User(Base):
+    """Modal of User
+    1. Set table name,
+    2. Initialise columns: id, name, email, picture"""
+
+    __tablename__ = "user"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable=False)
+    email = Column(String(250), nullable=False)
+    picture = Column(String(250))
+
+
 class Category(Base):
     """Modal of Category:
     1. Set table name,
@@ -24,12 +36,17 @@ class Category(Base):
     __tablename__ = "category"
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    user = relationship("User",
+                            backref=backref("category",
+                                            cascade="all, delete-orphan"))
 
     @property
     def serialize(self):
         return {
             "id": self.id,
-            "name": self.name
+            "name": self.name,
+            "username": self.user.name
         }
 
 
@@ -44,7 +61,13 @@ class Item(Base):
     name = Column(String(250), nullable=False)
     description = Column(String(1000))
     category_id = Column(Integer, ForeignKey("category.id"))
-    category = relationship("Category", backref=backref("item", cascade="all, delete-orphan"))
+    category = relationship("Category",
+                            backref=backref("item",
+                                            cascade="all, delete-orphan"))
+    user_id = Column(Integer, ForeignKey("user.id"))
+    user = relationship("User",
+                            backref=backref("item",
+                                            cascade="all, delete-orphan"))
 
     @property
     def serialize(self):
@@ -52,7 +75,8 @@ class Item(Base):
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "category": self.category.name
+            "category": self.category.name,
+            "username": self.user.name
         }
 
 # Create instance of Engine class,

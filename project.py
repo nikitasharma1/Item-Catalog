@@ -8,7 +8,7 @@ from flask import session as login_session
 from flask import make_response
 
 # Imports from "database_setup.py"
-from database_setup import Base, Category, Item
+from database_setup import Base, Category, Item, User
 
 # Imports from SQLAlchemy toolkit
 from sqlalchemy import create_engine
@@ -40,6 +40,21 @@ CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Item Catelog"
 
+
+def getUserId(email):
+	try:
+		user = session.query(User).filter_by(email=email).one()
+		return user_id
+	except Exception:
+		return None
+
+def createUser(login_session):
+	user = User(name=login_session["username"],
+				email=login_session["email"],
+				picture=login_session["picture"])
+	session.add(user)
+	session.commit()
+	return user.id
 
 @app.route("/login")
 def show_login():
@@ -127,6 +142,13 @@ def gconnect():
 	login_session["picture"] = data["picture"]
 	login_session["email"] = data["email"]
 
+	# Check if user exists
+	user_id = getUserId(login_session["email"])
+	if not user_id:
+		user_id = createUser(login_session)
+
+	login_session["user_id"] = user_id
+
 	output = ""
 	output += "<h3> Welcome, " + login_session["username"]
 	output += "!</h3>"
@@ -160,6 +182,8 @@ def gdisconnect():
 		del login_session["username"]
 		del login_session["email"]
 		del login_session["picture"]
+		del login_session["user_id"]
+
 		response =  make_response(
 			json.dumps("Successfully Disconnected!"), 200)
 		response.headers["Content-Type"] = "application/json"
@@ -202,7 +226,8 @@ def create_category():
 							   categories=categories,
 							   logged_in=True)
 	else:
-		category = Category(name=request.form["name"])
+		category = Category(name=request.form["name"],
+							user_id=login_session["user_id"])
 		session.add(category)
 		session.commit()
 		flash("Added category "+ category.name)
@@ -216,6 +241,13 @@ def update_category(category_id):
 
 	categories = session.query(Category)
 	category = session.query(Category).filter_by(id=category_id).one()
+
+	if category.user_id != login_session["user_id"]:
+		response = make_response(
+			json.dumps("Unauthorized"), 401)
+		response.headers["Content-Type"] = "application/json"
+		return response
+
 	if request.method == "GET":
 		return render_template("category/update_category.html",
 							   category_id=category_id,
@@ -238,6 +270,13 @@ def delete_category(category_id):
 
 	categories = session.query(Category)
 	category = session.query(Category).filter_by(id=category_id).one()
+
+	if category.user_id != login_session["user_id"]:
+		response = make_response(
+			json.dumps("Unauthorized"), 401)
+		response.headers["Content-Type"] = "application/json"
+		return response
+
 	if request.method == "GET":
 		return render_template("category/delete_category.html",
 							   category_id=category_id,
@@ -259,12 +298,16 @@ def read_item_by_category(category_id):
 	categories = session.query(Category)
 	category = categories.filter_by(id=category_id).one()
 	items = session.query(Item).filter_by(category_id=category_id)
+
+	user_is_creator = category.user_id == login_session["user_id"]
+
 	return render_template("item/read_item_by_category.html",
 						   items=items,
 						   categories=categories,
 						   category_name=category.name,
 						   category_id=category_id,
-						   logged_in=logged_in)
+						   logged_in=logged_in,
+						   user_is_creator=user_is_creator)
 
 
 @app.route("/category/<int:category_id>/item/<int:item_id>/description/")
@@ -276,6 +319,9 @@ def read_item_description(category_id, item_id):
 	category = categories.filter_by(id=category_id).one()
 	items = session.query(Item).filter_by(id=item_id)
 	item = items.one()
+
+	user_is_creator = item.user_id == login_session["user_id"]
+
 	return render_template("item/read_item_description.html",
 						   items = items,
 						   item = item,
@@ -284,7 +330,8 @@ def read_item_description(category_id, item_id):
 						   item_name=item.name,
 						   category_id=category_id,
 						   item_id=item_id,
-						   logged_in=logged_in)
+						   logged_in=logged_in,
+						   user_is_creator=user_is_creator)
 
 @app.route("/category/<int:category_id>/item/create/", methods=["GET", "POST"])
 def create_item(category_id):
@@ -300,7 +347,8 @@ def create_item(category_id):
 	else:
 		item = Item(name=request.form["name"],
 					description=request.form["description"],
-					category_id=category_id)
+					category_id=category_id,
+					user_id=login_session["user_id"])
 		session.add(item)
 		session.commit()
 		flash("Created item " + item.name)
@@ -315,6 +363,13 @@ def update_item(category_id, item_id):
 
 	categories = session.query(Category)
 	item = session.query(Item).filter_by(id=item_id).one()
+
+	if item.user_id != login_session["user_id"]:
+		response = make_response(
+			json.dumps("Unauthorized"), 401)
+		response.headers["Content-Type"] = "application/json"
+		return response
+
 	if request.method == "GET":
 		return render_template("item/update_item.html",
 							   category_id=category_id,
@@ -341,6 +396,13 @@ def delete_item(category_id, item_id):
 
 	categories = session.query(Category)
 	item = session.query(Item).filter_by(id=item_id).one()
+
+	if item.user_id != login_session["user_id"]:
+		response = make_response(
+			json.dumps("Unauthorized"), 401)
+		response.headers["Content-Type"] = "application/json"
+		return response
+
 	if request.method == "GET":
 		return render_template("item/delete_item.html",
 							   category_id=category_id,
