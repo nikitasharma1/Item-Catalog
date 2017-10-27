@@ -1,5 +1,16 @@
 {% extends "site.html" %}
 
-{% block main %}
-	{% include "includes/form/delete_category.html" %}
+{% block content %}
+<div class="col-md-9">
+	<h2>Delete Category</h2>
+	<form method="POST" action="{{ url_for('delete_category', category_id=category_id) }}">
+		<div class="form-group">
+			<p>Continue to delete {{ category_name }}?</p>
+			<input type="submit" value="Delete" class="btn btn-danger">
+			<a href="{{ url_for('index') }}">
+				<input type="button" value="Cancel" class="btn btn-inverse">
+			</a>
+		</div>
+	</form>
+</div>
 {% endblock %}

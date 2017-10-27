@@ -14,7 +14,12 @@
 <body>
 	<div class="container">
 		{% include "includes/header/header.html" %}
-		{% block main %}{% endblock %}
+		{% block main %}
+		<main class="row">
+			{% include "includes/aside/aside.html" %}
+			{% block content %}{% endblock %}
+		</main>
+		{% endblock %}
 		{% include "includes/footer/footer.html" %}
 	</div>
 	{% block scripts %}
