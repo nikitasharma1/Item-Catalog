@@ -9,8 +9,14 @@
 	<br><br>
 	{% endif %}
 	<dl class="category">
+		{% if categories == [] %}
+		<em>No Categories Found</em>
+		{% else %}
+
 		{% for category in categories %}
 		<dt><a href="{{ url_for('read_item_by_category', category_id=category.id) }}">{{ category.name }}</a></dt>
 		{% endfor %}
+
+		{% endif %}
 	</dl>
 </aside>

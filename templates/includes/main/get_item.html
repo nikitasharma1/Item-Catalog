@@ -1,11 +1,11 @@
-{% extends "includes/main/main.html" %}
+{% extends "site.html" %}
 
 {% block content %}
 <div class="col-md-9">
 
 	{% if category_name is defined %}
-	<h2 class="text-capitalize">{{category_name}}</h2>
-		{% if item_name is not defined and logged_in%}
+	<h2 class="text-capitalize">{{ category_name }}</h2>
+		{% if item_name is not defined and logged_in %}
 		{% if user_is_creator %}
 		<a href="{{ url_for('update_category', category_id=category_id) }}">
 			<button type="button" class="btn btn-primary">
@@ -29,6 +29,9 @@
 	<h2 class="text-capitalize">Items</h2>
 	{% endif %}
 
+	{% if items==[] %}
+		<em class="text-muted">No Items Found</em>
+	{% else %}
 	<dl class="item">
 		{% for item in items %}
 			<dt class="text-capitalize">
@@ -43,5 +46,6 @@
 			{% block item_description %}{% endblock %}
 		{% endfor %}
 	</dl>
+	{% endif %}
 </div>
 {% endblock %}
