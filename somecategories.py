@@ -18,22 +18,22 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 category1 = Category(name="category1",
-					 user_id=1)
+                     user_id=1)
 session.add(category1)
 session.commit()
 
 category2 = Category(name="category2",
-					 user_id=1)
+                     user_id=1)
 session.add(category2)
 session.commit()
 
 category3 = Category(name="category3",
-					 user_id=1)
+                     user_id=1)
 session.add(category3)
 session.commit()
 
 category4 = Category(name="category4",
-					 user_id=1)
+                     user_id=1)
 session.add(category4)
 session.commit()
 

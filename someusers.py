@@ -18,13 +18,13 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 user1 = User(name="User1",
-			 email="example1@example1.com",
-			 picture="http://via.placeholder.com/100x100")
+             email="example1@example1.com",
+             picture="http://via.placeholder.com/100x100")
 session.add(user1)
 session.commit()
 
 user2 = User(name="User2",
-			 email="example2@example2.com",
-			 picture="http://via.placeholder.com/100x100")
+             email="example2@example2.com",
+             picture="http://via.placeholder.com/100x100")
 session.add(user2)
 session.commit()
