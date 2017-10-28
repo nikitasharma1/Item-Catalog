@@ -1,0 +1,17 @@
+(Replace category_id and item_id with valid integer values)
+
+1.To fetch all categories
+http://localhost:5000/category/JSON
+
+2. To fetch categories by id
+http://localhost:5000/category/category_id/JSON
+
+3. To fetch all items
+http://localhost:5000/item/JSON
+
+4. To fetch all items by category id
+http://localhost:5000/category/category_id/item/JSON
+
+5. To fetch item by id
+http://localhost:5000/item/item_id/JSON,
+http://localhost:5000/category/category_id/item/item_id/JSON
