@@ -29,6 +29,12 @@ $ python database_setup.py
 $ python dummy_data.py
 ```
 
+- Run script **project.py**
+
+```
+$ python project.py
+```
+
 - Connect to server at ```http://localhost:5000``` from browser.
 
 ## Status:
