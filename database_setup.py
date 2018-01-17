@@ -81,7 +81,8 @@ class Item(Base):
 
 # Create instance of Engine class,
 # which provides interface to database
-engine = create_engine("sqlite:///item_catelog.db")
+#engine = create_engine("sqlite:///item_catelog.db")
+engine = create_engine("postgresql://catalog:catalogpass@localhost/catalog")
 
 # Create tables using classes and corresponding mapper code
 Base.metadata.create_all(engine)

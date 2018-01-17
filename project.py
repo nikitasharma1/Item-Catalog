@@ -26,7 +26,8 @@ from helper_functions import *
 
 # Connect to database,
 # Create session
-engine = create_engine("sqlite:///item_catelog.db")
+#engine = create_engine("sqlite:///item_catelog.db")
+engine = create_engine("postgresql://catalog:catalogpass@localhost/catalog")
 # Bind schema constructs(mapper code) to engine
 Base.metadata.bind = engine
 # Create a configured Session class
