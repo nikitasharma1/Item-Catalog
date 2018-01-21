@@ -5,7 +5,7 @@ import random
 import string
 
 # Imports from "database_setup.py"
-from database_setup import Base, Category, Item, User
+from catalog.database_setup import Base, Category, Item, User
 
 
 # Create anti forgery state token

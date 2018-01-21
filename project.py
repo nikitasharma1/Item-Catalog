@@ -8,7 +8,8 @@ from flask import session as login_session
 from flask import make_response
 
 # Imports from "database_setup.py"
-from database_setup import Base, Category, Item, User
+from catalog.database_setup import Base, Category, Item, User
+#from database_setup import Base, Category, Item, User
 
 # Imports from SQLAlchemy toolkit
 from sqlalchemy import create_engine
@@ -22,7 +23,7 @@ import json
 import requests
 
 # Import from "helper_functions.py"
-from helper_functions import *
+from catalog.helper_functions import *
 
 # Connect to database,
 # Create session
@@ -41,7 +42,7 @@ app = Flask(__name__)
 
 # Store client id in a variable
 CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+    open('/var/www/catalog/catalog/client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Item Catelog"
 
 
@@ -100,7 +101,7 @@ def gconnect():
         # 1. Create flow object
         # 2. Exchange authorization code with credentials object
         # The credentials object contains the access token
-        oauth_flow = flow_from_clientsecrets("client_secrets.json", scope="")
+        oauth_flow = flow_from_clientsecrets("/var/www/catalog/catalog/client_secrets.json", scope="")
         oauth_flow.redirect_uri = "postmessage"
         credentials = oauth_flow.step2_exchange(auth_code)
     except FlowExchangeError:
